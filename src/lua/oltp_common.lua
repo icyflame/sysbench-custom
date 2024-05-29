@@ -67,6 +67,8 @@ sysbench.cmdline.options = {
    skip_trx =
       {"Don't start explicit transactions and execute all queries " ..
           "in the AUTOCOMMIT mode", false},
+   skip_create_table =
+      {"Don't create tables during the PREPARE step", false}
    secondary =
       {"Use a secondary index in place of the PRIMARY KEY", false},
    create_secondary =
@@ -90,9 +92,14 @@ function cmd_prepare()
    local drv = sysbench.sql.driver()
    local con = drv:connect()
 
-   for i = sysbench.tid % sysbench.opt.threads + 1, sysbench.opt.tables,
-   sysbench.opt.threads do
-     create_table(drv, con, i)
+   if sysbench.opt.table_num > 0 then
+	  assert(sysbench.opt.threads == 1, "multiple threads will not have any impact when creating a single table")
+	  create_table(drv, con, sysbench.opt.table_num)
+   else
+	  for i = sysbench.tid % sysbench.opt.threads + 1, sysbench.opt.tables,
+		 sysbench.opt.threads do
+		 create_table(drv, con, i)
+	  end
    end
 end
 
@@ -192,7 +199,8 @@ function create_table(drv, con, table_num)
 
    print(string.format("Creating table 'sbtest%d'...", table_num))
 
-   query = string.format([[
+   if not sysbench.opt.skip_create_table then
+	  query = string.format([[
 CREATE TABLE sbtest%d(
   id %s,
   k INTEGER DEFAULT '0' NOT NULL,
@@ -200,10 +208,12 @@ CREATE TABLE sbtest%d(
   pad CHAR(60) DEFAULT '' NOT NULL,
   %s (id)
 ) %s %s]],
-      table_num, id_def, id_index_def, engine_def,
-      sysbench.opt.create_table_options)
+table_num, id_def, id_index_def, engine_def,
+sysbench.opt.create_table_options)
 
-   con:query(query)
+	  con:query(query)
+   end
+
 
    if (sysbench.opt.table_size > 0) then
       print(string.format("Inserting %d records into 'sbtest%d'",
