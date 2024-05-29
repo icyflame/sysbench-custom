@@ -1,3 +1,4 @@
+-- Copyright (C) 2024 Siddharth Kannan <mail@siddharthkannan.in>
 -- Copyright (C) 2006-2018 Alexey Kopytov <akopytov@gmail.com>
 
 -- This program is free software; you can redistribute it and/or modify
@@ -37,6 +38,8 @@ sysbench.cmdline.options = {
       {"Range size for range SELECT queries", 100},
    tables =
       {"Number of tables", 1},
+   table_num =
+      {"Table number to work with during the prepare step", -1},
    point_selects =
       {"Number of point SELECT queries per transaction", 10},
    simple_ranges =
