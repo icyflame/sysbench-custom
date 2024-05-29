@@ -1,0 +1,7 @@
+#+TITLE: Sysbench Fork
+#+SUBTITLE: A fork of sysbench with some custom benchmarks
+
+This is my fork of Sysbench with some custom benchmarks, which are useful to test the performance of
+write-only transactions with 2 UPDATE queries in each transaction.
+
+The diff between sysbench's default branch and this repository can be seen [[https://github.com/akopytov/sysbench/compare/master...icyflame:sysbench-custom:custom-benchmarks][here.]]
